@@ -13,7 +13,7 @@ export default function PlacesPage() {
   const [perks, setPerks] = useState([]);
   const [extraInfo, setExtraInfo] = useState("");
   const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState('');
+  const [checkOut, setCheckOut] = useState("");
   const [maxGuests, setMaxGuests] = useState(1);
   function inputHeader(text) {
     return <h2 className="text-2xl mt-4">{text}</h2>;
@@ -29,13 +29,32 @@ export default function PlacesPage() {
       </>
     );
   }
-  async function addPhotoByLink(ev){
+  async function addPhotoByLink(ev) {
     ev.preventDefault();
-    const {data:filename} = await axios.post('/upload-by-link', {link:photoLink});
-    setAddedPhotos(prev => {
-      return [...prev, filename];
-      setPhotoLink('');
+    const { data: filename } = await axios.post("/upload-by-link", {
+      link: photoLink,
     });
+    setAddedPhotos((prev) => {
+      return [...prev, filename];
+    });
+    setPhotoLink("");
+  }
+  function uploadPhoto(ev) {
+    const files = ev.target.files;
+    const data = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      data.append("photos", files[i]);
+    }
+    axios
+      .post("/upload", data, {
+        headers: { "Content-type": "multipart/form-data" },
+      })
+      .then((response) => {
+        const { data: filenames } = response;
+        setAddedPhotos((prev) => {
+          return [...prev, ...filenames];
+        });
+      });
   }
 
   return (
@@ -58,7 +77,7 @@ export default function PlacesPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 d="M12 4.5v15m7.5-7.5h-15"
-              />
+              /> 
             </svg>
             Add new place
           </Link>
@@ -89,17 +108,31 @@ export default function PlacesPage() {
                 onChange={(ev) => setPhotoLink(ev.target.value)}
                 placeholder={"Add using a link....jpg"}
               />
-              <button onClick={addPhotoByLink} className="bg-gray-200 px-4 rounded-2xl">
+              <button
+                onClick={addPhotoByLink}
+                className="bg-gray-200 px-4 rounded-2xl"
+              >
                 Add&nbsp;Photo
               </button>
             </div>
             <div className="mt-2 grid gap-2 grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-              {addedPhotos.length>0 && addedPhotos.map(link => (
-                <div>
-                  <img className="rounded-2xl" src={'http://localhost:4000/uploads/'+link} alt="" />
-                </div>
-              ) )}
-              <button className="flex items-center gap-1 justify-center border bg-transparent rounded-2xl p-2 text-2xl text-gray-600">
+              {addedPhotos.length > 0 &&
+                addedPhotos.map((link) => (
+                  <div className="h-32 flex">
+                    <img
+                      className="rounded-2xl w-full object-cover"
+                      src={"http://localhost:4000/uploads/" + link}
+                      alt=""
+                    />
+                  </div>
+                ))}
+              <label className="h-32 cursor-pointer flex items-center gap-1 justify-center border bg-transparent rounded-2xl p-2 text-2xl text-gray-600">
+                <input
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={uploadPhoto}
+                />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -115,7 +148,7 @@ export default function PlacesPage() {
                   />
                 </svg>
                 Upload
-              </button>
+              </label>
             </div>
             {preInput("Description", "Select all the perks of place")}
             <textarea
