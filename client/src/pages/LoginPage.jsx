@@ -10,6 +10,10 @@ export default function LoginPage() {
   const { setUser } = useContext(UserContext);
   async function handleLoginSubmit(ev) {
     ev.preventDefault();
+    if (email.trim() === "" || password.trim() === "") {
+      alert("Username or Password is wrong");
+      return;
+    }
     try {
       const { data } = await axios.post("/login", { email, password });
       setUser(data);
@@ -41,7 +45,9 @@ export default function LoginPage() {
             value={password}
             onChange={(ev) => setPassword(ev.target.value)}
           />
-          <button className="primary">Login</button>
+          <button className="p-2 w-full bg-green-500 text-white rounded-2xl">
+            Login
+          </button>
           <div className="text-center py-2 text-gray-500">
             Don't have an account?{" "}
             <Link className="underline text-black" to={"/register"}>

@@ -42,7 +42,7 @@ export default function RegisterPage() {
             value={password}
             onChange={(ev) => setPassword(ev.target.value)}
           />
-          <button className="primary">Register</button>
+          <button className="p-2 w-full bg-green-500 text-white rounded-2xl">Register</button>
           <div className="text-center py-2 text-gray-500">
             Already a memeber?{" "}
             <Link className="underline text-black" to={"/login"}>

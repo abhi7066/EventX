@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
-import { data } from "autoprefixer";
+
 
 export const UserContext = createContext({});
 
@@ -16,8 +16,10 @@ export function UserContextProvider({ children }) {
     }
   }, []);
   return (
-    <UserContext.Provider value={{ user, setUser, ready }}>
-      {children}
-    </UserContext.Provider>
+    (
+      <UserContext.Provider value={{ user, setUser, ready }}>
+        {children}
+      </UserContext.Provider>
+    )
   );
 }
